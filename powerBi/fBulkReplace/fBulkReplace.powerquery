@@ -1,0 +1,21 @@
+let BulkReplace = (DataTable as table, FindReplaceTable as table, DataTableColumn as list) =>
+	let
+		FindReplaceList = Table.ToRows(FindReplaceTable),
+		Counter = Table.RowCount(FindReplaceTable),
+		BulkReplaceValues = (DataTableTemp, n) =>
+		let
+			ReplaceTable = Table.ReplaceValue(
+				DataTableTemp,
+				if FindReplaceList{n}{0} = null then "" else FindReplaceList{n}{0},
+				if FindReplaceList{n}{1} = null then "" else FindReplaceList{n}{1},
+				Replacer.ReplaceText,
+				DataTableColumn
+				)
+		in
+			if n = Counter - 1
+				then ReplaceTable
+				else @BulkReplaceValues(ReplaceTable, n + 1),
+		Output = BulkReplaceValues(DataTable, 0)
+	in
+		Output
+in BulkReplace
