@@ -1,0 +1,9 @@
+let
+    Origen = Excel.CurrentWorkbook(){[Name="tabla_origen"]}[Content],
+    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Code", type text}, {"Info", type text}}),
+    #"Lista a remover" = Text.ToList(getArgument("chars2Remove")),
+
+    // Here the magic happends
+    Personalizado1 = List.Accumulate(#"Lista a remover",#"Tipo cambiado",(table, old) => Table.ReplaceValue(table,old,"", Replacer.ReplaceText, {"Code","Info"}))
+in
+    Personalizado1
