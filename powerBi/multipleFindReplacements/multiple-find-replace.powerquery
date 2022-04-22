@@ -1,0 +1,17 @@
+let
+    Source = Excel.CurrentWorkbook(){[Name="mytext"]}[Content],
+    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Text", type text}}),
+    #"Added Custom" = Table.AddColumn(#"Changed Type", "Text after replacements", 
+                                                each List.Accumulate(
+                                                        List.Numbers(0, Table.RowCount(replacements)), 
+                                                        [Text], 
+                                                        (state, current) => 
+                                                        Text.Replace(
+                                                                state, 
+                                                                replacements[Find]{current}, 
+                                                                replacements[Replace]{current}
+                                                        )
+                                                )
+                                    )
+in
+    #"Added Custom"
