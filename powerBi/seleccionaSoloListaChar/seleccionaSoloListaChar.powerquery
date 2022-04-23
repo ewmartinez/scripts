@@ -1,0 +1,9 @@
+let
+    Origen = Excel.CurrentWorkbook(){[Name="Tabla1"]}[Content],
+    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Dato", type text}}),
+    #"Limpia con ListAcumulate" = Table.AddColumn(#"Tipo cambiado", "Procesado", each List.Accumulate(Text.ToList([Dato]), "", (state, current) => if List.Contains(lis2Keep, current) then state & current else state)),
+    #"Limpia con TestSelect" = Table.AddColumn(#"Limpia con ListAcumulate", "Procesado2", each Text.Select([Dato], lis2Keep)),
+    #"Valor reemplazado" = Table.ReplaceValue(#"Limpia con TestSelect","1","t",Replacer.ReplaceText,{"Dato"}),
+    #"Son iguales?" = Table.AddColumn(#"Valor reemplazado", "Personalizado", each [Procesado]=[Procesado2])
+in
+    #"Son iguales?"
